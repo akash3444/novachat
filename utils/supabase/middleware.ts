@@ -36,12 +36,15 @@ export async function updateSession(request: NextRequest) {
 
   // IMPORTANT: DO NOT REMOVE auth.getUser()
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // const {
+  //   data: { user },
+  // } = await supabase.auth.getUser();
+
+  // Use getClaims instead of getUser to avoid unnecessary server calls
+  const { data } = await supabase.auth.getClaims();
 
   if (
-    !user &&
+    !data?.claims &&
     !request.nextUrl.pathname.startsWith("/login") &&
     !request.nextUrl.pathname.startsWith("/auth")
   ) {

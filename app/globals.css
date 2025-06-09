@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@plugin "@tailwindcss/typography";
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -42,6 +44,18 @@
 
   --font-geist-sans: var(--font-geist-sans);
   --font-geist-mono: var(--font-geist-mono);
+
+  @keyframes bounce {
+    0%,
+    100% {
+      transform: translateY(-100%);
+      animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+    }
+    50% {
+      transform: none;
+      animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+    }
+  }
 }
 
 :root {
@@ -119,5 +133,12 @@
   }
   body {
     @apply bg-background text-foreground font-geist-sans;
+  }
+  button {
+    @apply cursor-pointer;
+  }
+  code,
+  pre {
+    @apply font-geist-mono;
   }
 }
