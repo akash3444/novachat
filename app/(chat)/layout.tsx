@@ -6,7 +6,7 @@ const ChatLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <SidebarProvider>
       <ChatSidebar />
-      <SidebarInset>{children}</SidebarInset>
+      <SidebarInset className="px-6">{children}</SidebarInset>
     </SidebarProvider>
   );
 };

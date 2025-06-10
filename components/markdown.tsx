@@ -24,7 +24,7 @@ const CodeHighlight = ({
       {/* Code block header */}
       <div className="z-10 sticky top-0 h-8 border-b flex items-center justify-between pl-6 pr-2 bg-muted">
         <span className="text-xs text-muted-foreground">{language}</span>
-        <CopyButton text={code} />
+        <CopyButton text={code} className="size-6" />
       </div>
 
       {/* Code block */}
