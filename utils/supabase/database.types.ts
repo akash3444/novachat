@@ -13,25 +13,36 @@ export type Database = {
         Row: {
           created_at: string
           id: string
-          messages: Json[] | null
-          title: string | null
-          user_id: string | null
+          is_pinned: boolean
+          messages: Json[]
+          title: string
+          user_id: string
         }
         Insert: {
           created_at?: string
           id?: string
-          messages?: Json[] | null
-          title?: string | null
-          user_id?: string | null
+          is_pinned?: boolean
+          messages: Json[]
+          title?: string
+          user_id: string
         }
         Update: {
           created_at?: string
           id?: string
-          messages?: Json[] | null
-          title?: string | null
-          user_id?: string | null
+          is_pinned?: boolean
+          messages?: Json[]
+          title?: string
+          user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "chats_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {

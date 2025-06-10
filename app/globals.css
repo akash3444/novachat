@@ -132,6 +132,7 @@
     @apply border-border outline-ring/50;
   }
   body {
+    scrollbar-gutter: stable;
     @apply bg-background text-foreground font-geist-sans;
   }
   button {
@@ -140,5 +141,14 @@
   code,
   pre {
     @apply font-geist-mono;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
   }
 }

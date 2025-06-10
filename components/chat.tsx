@@ -4,45 +4,34 @@ import { cn } from "@/lib/utils";
 import { useChatContext } from "@/providers/chat";
 import { getChatById } from "@/utils/db/chat";
 import { useChat } from "@ai-sdk/react";
-import { UIMessage } from "ai";
-import { notFound } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Message, UIMessage } from "ai";
+import { useEffect, useRef } from "react";
 import { ChatMessageInput } from "./chat-message-input";
 import { Markdown } from "./markdown";
 import { WavyDotsLoader } from "./ui/wavy-dots-loader";
+import { generateChatTitle } from "@/utils/chat";
 
 export const Chat = ({ id }: { id: string }) => {
-  const [initialMessages, setInitialMessages] = useState<UIMessage[]>([]);
-  const [isLoadingChat, setIsLoadingChat] = useState(false);
-  const { chatsToBeProcessed } = useChatContext();
   const bottomOfChatRef = useRef<HTMLDivElement>(null);
 
+  const queryClient = useQueryClient();
+  const { chatsToBeProcessed } = useChatContext();
   const isChatProcessed = !chatsToBeProcessed[id];
+
+  const { data: chat, isLoading: isLoadingChat } = useQuery({
+    queryKey: ["chat", id],
+    queryFn: () => getChatById(id),
+    enabled: isChatProcessed,
+  });
 
   const { append, messages, status } = useChat({
     id,
     onError: (error) => {
       console.log("error :", error.message);
     },
-    initialMessages,
+    initialMessages: (chat?.messages as unknown as Message[]) ?? [],
   });
-
-  const loadChat = async () => {
-    setIsLoadingChat(true);
-
-    try {
-      const chat = await getChatById(id);
-
-      if (!chat || !chat.messages) notFound();
-
-      setInitialMessages(chat.messages as unknown as UIMessage[]);
-    } catch (error) {
-      console.error("Error loading chat :", { id, error });
-      notFound();
-    } finally {
-      setIsLoadingChat(false);
-    }
-  };
 
   useEffect(() => {
     // Append the initial message if the chat is not processed
@@ -51,10 +40,26 @@ export const Chat = ({ id }: { id: string }) => {
         role: "user",
         content: chatsToBeProcessed[id].message,
       });
-      return;
-    }
+      // Optimistically add this chat to the chat list
+      queryClient.setQueryData(
+        ["chats"],
+        (oldChatList: { id: string; title: string }[]) => {
+          return [{ id, title: "New chat" }, ...oldChatList];
+        }
+      );
 
-    loadChat();
+      generateChatTitle(id, chatsToBeProcessed[id].message).then((title) => {
+        // Optimistically update the chat title
+        queryClient.setQueryData(
+          ["chats"],
+          (oldChatList: { id: string; title: string }[]) => {
+            return oldChatList.map((chat) =>
+              chat.id === id ? { ...chat, title } : chat
+            );
+          }
+        );
+      });
+    }
   }, []);
 
   // Scroll to the bottom of the chat when new messages appear
@@ -68,7 +73,7 @@ export const Chat = ({ id }: { id: string }) => {
   }, [messages]);
 
   return (
-    <div className="flex flex-col gap-4 max-w-[var(--breakpoint-md)] mx-auto max-h-screen pb-4">
+    <div className="flex flex-col gap-4 max-w-[var(--breakpoint-md)] mx-auto h-screen">
       <div className="grow flex flex-col gap-10 py-6">
         {messages.map((message, index) => (
           <div
@@ -93,9 +98,9 @@ export const Chat = ({ id }: { id: string }) => {
         {(isLoadingChat || status === "submitted") && (
           <WavyDotsLoader className="text-muted-foreground" />
         )}
-        <div ref={bottomOfChatRef}></div>
       </div>
-      <div className="sticky bottom-0 py-4 bg-background">
+      <div ref={bottomOfChatRef} />
+      <div className="sticky bottom-0 bg-background pt-4">
         <ChatMessageInput
           isLoading={status === "submitted" || status === "streaming"}
           onSubmit={(message) => {

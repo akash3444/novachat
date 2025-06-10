@@ -1,10 +1,10 @@
+import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import { ClassAttributes, ComponentProps, HTMLAttributes } from "react";
 import ReactMarkdown, { ExtraProps } from "react-markdown";
 import ShikiHighlighter, { isInlineCode } from "react-shiki";
 import remarkGfm from "remark-gfm";
 import { CopyButton } from "./copy-button";
-import { cn } from "@/lib/utils";
 
 const CodeHighlight = ({
   className,
