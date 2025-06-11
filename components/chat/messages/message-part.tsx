@@ -1,14 +1,22 @@
 import { CopyButton } from "@/components/copy-button";
 import { Markdown } from "@/components/markdown";
-import { UIMessage } from "ai";
-import { ReadAloudButton } from "../actions/read-aloud-button";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Button } from "@/components/ui/button";
-import { RefreshCcw } from "lucide-react";
+import { exportMarkdown, exportNodeAsImage } from "@/utils/export";
+import { UIMessage } from "ai";
+import { FileText, ImageIcon, RefreshCcw, Share } from "lucide-react";
+import { useRef } from "react";
+import { ReadAloudButton } from "../actions/read-aloud-button";
 
 export const MessagePart = ({
   part,
@@ -19,12 +27,18 @@ export const MessagePart = ({
   role: UIMessage["role"];
   onRegenerate: () => void;
 }) => {
+  const messageRef = useRef<HTMLDivElement>(null);
+
   switch (part.type) {
     case "text":
       if (role === "user") return part.text;
       return (
         <div>
-          <Markdown>{part.text}</Markdown>
+          <div className="-m-4">
+            <div ref={messageRef} className="p-4">
+              <Markdown>{part.text}</Markdown>
+            </div>
+          </div>
           <div className="-mt-2 flex items-center -ml-2 gap-0.5">
             <CopyButton
               text={part.text}
@@ -34,6 +48,39 @@ export const MessagePart = ({
               text={part.text}
               className="size-8 text-muted-foreground"
             />
+            <Tooltip>
+              <DropdownMenu>
+                <TooltipTrigger asChild>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-8 text-muted-foreground"
+                      onClick={onRegenerate}
+                    >
+                      <Share />
+                    </Button>
+                  </DropdownMenuTrigger>
+                </TooltipTrigger>
+
+                <DropdownMenuContent>
+                  <DropdownMenuItem onSelect={() => exportMarkdown(part.text)}>
+                    <FileText /> Export as Markdown
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onSelect={() =>
+                      messageRef.current &&
+                      exportNodeAsImage(messageRef.current, "chat-message.png")
+                    }
+                  >
+                    <ImageIcon /> Export as Image
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <TooltipContent>
+                <p>Export message</p>
+              </TooltipContent>
+            </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
