@@ -45,11 +45,12 @@ export const ChatMessageInput = ({
   return (
     <form className="rounded-t-lg border pb-3">
       <Textarea
+        autoFocus
         name="message"
         placeholder="Type your message here..."
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        className="resize-none border-none shadow-none focus-within:!ring-0 p-4 max-h-40 text-base"
+        className="!bg-background resize-none border-none shadow-none focus-within:!ring-0 p-4 max-h-40 text-base"
         rows={3}
         onKeyDown={handleKeyDown}
       />

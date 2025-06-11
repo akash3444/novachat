@@ -17,7 +17,8 @@ const CodeHighlight = ({
   const match = className?.match(/language-(\w+)/);
   const language = match ? match[1] : undefined;
   const isInline = node ? isInlineCode(node) : undefined;
-  const theme = resolvedTheme === "dark" ? "github-dark" : "github-light";
+  const theme =
+    resolvedTheme === "dark" ? "github-dark-default" : "github-light";
 
   return !isInline ? (
     <div className="isolate overflow-clip">
@@ -32,6 +33,7 @@ const CodeHighlight = ({
         language={language}
         theme={theme}
         showLanguage={false}
+        className="[&>pre]:!bg-muted/60 [&>pre]:!rounded-none"
         {...props}
       >
         {code}

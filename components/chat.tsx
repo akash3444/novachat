@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { useChatContext } from "@/providers/chat";
 import { generateChatTitle } from "@/utils/chat";
 import { getChatById } from "@/utils/db/chat";
@@ -9,8 +8,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Message } from "ai";
 import { useEffect } from "react";
 import { ChatMessageInput } from "./chat-message-input";
+import { ChatMessages } from "./chat/messages/chat-messages";
 import { WavyDotsLoader } from "./ui/wavy-dots-loader";
-import { MessagePart } from "./chat/messages/message-part";
 
 export const Chat = ({ id }: { id: string }) => {
   const queryClient = useQueryClient();
@@ -22,7 +21,7 @@ export const Chat = ({ id }: { id: string }) => {
     queryFn: () => getChatById(id),
     enabled: isChatProcessed,
   });
-  const { append, messages, status, reload, stop } = useChat({
+  const { append, messages, status, reload, stop, error } = useChat({
     experimental_throttle: 50,
     id,
     initialMessages: (chat?.messages as unknown as Message[]) ?? [],
@@ -63,29 +62,12 @@ export const Chat = ({ id }: { id: string }) => {
   return (
     <div className="flex flex-col gap-4 max-w-[var(--breakpoint-md)] w-full mx-auto h-screen">
       <div className="grow flex flex-col gap-10 py-6">
-        {messages.map((message, index) => (
-          <div
-            // Fix the key issue
-            key={`${id}-${index}`}
-            className={cn("w-auto", {
-              "bg-muted ml-auto py-1.5 px-3.5 rounded-lg":
-                message.role === "user",
-              "prose prose-pre:p-0 prose-pre:bg-transparent prose-pre:border max-w-[var(--breakpoint-md)]":
-                message.role !== "user",
-            })}
-          >
-            {message.parts.map((part, index) => (
-              <MessagePart
-                key={`${message.id}-${part.type}-${index}`}
-                part={part}
-                role={message.role}
-                onRegenerate={() => {
-                  reload();
-                }}
-              />
-            ))}
+        <ChatMessages messages={messages} onRegenerate={reload} />
+        {error && (
+          <div className="w-fit bg-destructive/15 text-destructive py-2 px-3 rounded-md">
+            Could not process your message. Please try again.
           </div>
-        ))}
+        )}
         {(isLoadingChat || status === "submitted") && (
           <WavyDotsLoader className="text-muted-foreground" />
         )}
