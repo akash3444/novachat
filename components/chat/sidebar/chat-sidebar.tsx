@@ -3,6 +3,7 @@
 import { BotMessageSquare, Plus } from "lucide-react";
 import * as React from "react";
 
+import { Button } from "@/components/ui/button";
 import {
   Sidebar,
   SidebarContent,
@@ -11,7 +12,6 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
-import { Button } from "../ui/button";
 import { ChatList } from "./chat-list";
 import { NavUser } from "./nav-user";
 import { PinnedChatList } from "./pinned-chat-list";

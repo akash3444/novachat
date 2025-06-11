@@ -1,14 +1,18 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { updateChatPinStatus } from "@/utils/db/chat";
 import { useQueryClient } from "@tanstack/react-query";
 import { Pin, PinOff } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { Button } from "../ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { DeleteChatButtonWithDialog } from "./delete-chat-button-with-dialog";
-import { updateChatPinStatus } from "@/utils/db/chat";
 
 export const ChatItem = ({
   chat,

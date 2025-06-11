@@ -6,20 +6,13 @@ import { generateChatTitle } from "@/utils/chat";
 import { getChatById } from "@/utils/db/chat";
 import { useChat } from "@ai-sdk/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Message, UIMessage } from "ai";
-import { RefreshCcw } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { Message } from "ai";
+import { useEffect } from "react";
 import { ChatMessageInput } from "./chat-message-input";
-import { ReadAloudButton } from "./chat/actions/read-aloud-button";
-import { CopyButton } from "./copy-button";
-import { Markdown } from "./markdown";
-import { Button } from "./ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { WavyDotsLoader } from "./ui/wavy-dots-loader";
+import { MessagePart } from "./chat/messages/message-part";
 
 export const Chat = ({ id }: { id: string }) => {
-  const bottomOfChatRef = useRef<HTMLDivElement>(null);
-
   const queryClient = useQueryClient();
   const { chatsToBeProcessed } = useChatContext();
   const isChatProcessed = !chatsToBeProcessed[id];
@@ -29,13 +22,13 @@ export const Chat = ({ id }: { id: string }) => {
     queryFn: () => getChatById(id),
     enabled: isChatProcessed,
   });
-
-  const { append, messages, status } = useChat({
+  const { append, messages, status, reload, stop } = useChat({
+    experimental_throttle: 50,
     id,
+    initialMessages: (chat?.messages as unknown as Message[]) ?? [],
     onError: (error) => {
       console.log("error :", error.message);
     },
-    initialMessages: (chat?.messages as unknown as Message[]) ?? [],
   });
 
   useEffect(() => {
@@ -67,16 +60,6 @@ export const Chat = ({ id }: { id: string }) => {
     }
   }, []);
 
-  // Scroll to the bottom of the chat when new messages appear
-  useEffect(() => {
-    if (
-      bottomOfChatRef.current &&
-      (status === "streaming" || status === "submitted")
-    ) {
-      bottomOfChatRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages]);
-
   return (
     <div className="flex flex-col gap-4 max-w-[var(--breakpoint-md)] w-full mx-auto h-screen">
       <div className="grow flex flex-col gap-10 py-6">
@@ -96,6 +79,9 @@ export const Chat = ({ id }: { id: string }) => {
                 key={`${message.id}-${part.type}-${index}`}
                 part={part}
                 role={message.role}
+                onRegenerate={() => {
+                  reload();
+                }}
               />
             ))}
           </div>
@@ -104,7 +90,6 @@ export const Chat = ({ id }: { id: string }) => {
           <WavyDotsLoader className="text-muted-foreground" />
         )}
       </div>
-      <div ref={bottomOfChatRef} />
       <div className="sticky bottom-0 bg-background pt-4">
         <ChatMessageInput
           isLoading={status === "submitted" || status === "streaming"}
@@ -114,60 +99,9 @@ export const Chat = ({ id }: { id: string }) => {
               content: message,
             });
           }}
+          onStop={stop}
         />
       </div>
     </div>
   );
-};
-
-const MessagePart = ({
-  part,
-  role,
-}: {
-  part: UIMessage["parts"][number];
-  role: UIMessage["role"];
-}) => {
-  switch (part.type) {
-    case "text":
-      if (role === "user") return part.text;
-      return (
-        <div>
-          <Markdown>{part.text}</Markdown>
-          <div className="-mt-2 flex items-center -ml-2 gap-0.5">
-            <CopyButton
-              text={part.text}
-              className="size-8 text-muted-foreground"
-            />
-            <ReadAloudButton
-              text={part.text}
-              className="size-8 text-muted-foreground"
-            />
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="size-8 text-muted-foreground"
-                >
-                  <RefreshCcw />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Regenerate message</p>
-              </TooltipContent>
-            </Tooltip>
-          </div>
-        </div>
-      );
-
-    case "step-start":
-      return null;
-
-    // TODO: handle these cases
-    case "file":
-    case "reasoning":
-    case "source":
-    case "tool-invocation":
-      return null;
-  }
 };

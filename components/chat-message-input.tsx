@@ -7,11 +7,13 @@ import { Textarea } from "./ui/textarea";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 export const ChatMessageInput = ({
-  onSubmit,
   isLoading,
+  onSubmit,
+  onStop,
 }: {
-  onSubmit: (message: string) => void;
   isLoading?: boolean;
+  onSubmit: (message: string) => void;
+  onStop?: () => void;
 }) => {
   const [message, setMessage] = useState("");
 
@@ -30,6 +32,14 @@ export const ChatMessageInput = ({
 
     onSubmit(message);
     setMessage("");
+  };
+
+  const handleMessage = () => {
+    if (isLoading) {
+      onStop?.();
+    } else {
+      handleSubmit();
+    }
   };
 
   return (
@@ -55,7 +65,7 @@ export const ChatMessageInput = ({
 
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button size="icon" disabled={!canSendMessage}>
+            <Button type="button" size="icon" onClick={handleMessage}>
               {isLoading ? (
                 <Loader2 className="size-5 animate-spin" />
               ) : (

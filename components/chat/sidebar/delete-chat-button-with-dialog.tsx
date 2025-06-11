@@ -1,8 +1,5 @@
 "use client";
 
-import { deleteChatById } from "@/utils/db/chat";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Loader2, Trash } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -12,9 +9,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "../ui/alert-dialog";
-import { Button } from "../ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { deleteChatById } from "@/utils/db/chat";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Loader2, Trash } from "lucide-react";
 import { toast } from "sonner";
 
 export function DeleteChatButtonWithDialog({
