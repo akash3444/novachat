@@ -1,8 +1,5 @@
 "use client";
 
-import { BotMessageSquare, Plus } from "lucide-react";
-import * as React from "react";
-
 import { Button } from "@/components/ui/button";
 import {
   Sidebar,
@@ -10,8 +7,12 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarTrigger,
+  useSidebar,
 } from "@/components/ui/sidebar";
+import { BotMessageSquare, Plus } from "lucide-react";
 import Link from "next/link";
+import * as React from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 import { ChatList } from "./chat-list";
 import { NavUser } from "./nav-user";
 import { PinnedChatList } from "./pinned-chat-list";
@@ -21,6 +22,8 @@ export function ChatSidebar({
 }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar {...props}>
+      <SidebarToggleShortcut />
+
       <SidebarHeader className="relative px-3">
         <div className="flex items-center justify-between gap-3">
           <Link
@@ -49,3 +52,10 @@ export function ChatSidebar({
     </Sidebar>
   );
 }
+
+const SidebarToggleShortcut = () => {
+  const { toggleSidebar } = useSidebar();
+  useHotkeys("cmd+b", toggleSidebar);
+
+  return null;
+};
