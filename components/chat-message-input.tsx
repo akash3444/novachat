@@ -43,40 +43,41 @@ export const ChatMessageInput = ({
   };
 
   return (
-    <form className="rounded-t-lg border pb-3">
-      <Textarea
-        autoFocus
-        name="message"
-        placeholder="Type your message here..."
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        className="!bg-background resize-none border-none shadow-none focus-within:!ring-0 p-4 max-h-40 text-base"
-        rows={3}
-        onKeyDown={handleKeyDown}
-      />
-      <div className="flex items-center justify-between gap-2 px-4">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="outline" size="icon">
-              <Paperclip />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Attach a file</TooltipContent>
-        </Tooltip>
+    <div className="border p-2 pb-0 rounded-t-xl bg-[image:repeating-linear-gradient(315deg,_var(--border)_0,_var(--border)_1px,_transparent_0,_transparent_50%)] bg-[size:11px_11px] bg-fixed bg-foreground/[0.02]">
+      <form className="rounded-t-lg border pb-3 overflow-hidden bg-background">
+        <Textarea
+          autoFocus
+          name="message"
+          placeholder="Type your message here..."
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          className="!bg-background resize-none border-none shadow-none focus-within:!ring-0 p-4 max-h-40 text-base min-h-22"
+          onKeyDown={handleKeyDown}
+        />
+        <div className="flex items-center justify-between gap-2 px-4">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="outline" size="icon">
+                <Paperclip />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Attach a file</TooltipContent>
+          </Tooltip>
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button type="button" size="icon" onClick={handleMessage}>
-              {isLoading ? (
-                <Loader2 className="size-5 animate-spin" />
-              ) : (
-                <ArrowUp className="size-5" />
-              )}
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Send message</TooltipContent>
-        </Tooltip>
-      </div>
-    </form>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button type="button" size="icon" onClick={handleMessage}>
+                {isLoading ? (
+                  <Loader2 className="size-5 animate-spin" />
+                ) : (
+                  <ArrowUp className="size-5" />
+                )}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Send message</TooltipContent>
+          </Tooltip>
+        </div>
+      </form>
+    </div>
   );
 };

@@ -16,7 +16,7 @@ export function ChatList() {
   });
 
   return (
-    <SidebarGroup>
+    <SidebarGroup className="grid">
       <SidebarGroupLabel>Chats</SidebarGroupLabel>
       <SidebarMenu>
         {isLoading ? null : chats?.length ? (

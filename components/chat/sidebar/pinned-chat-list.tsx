@@ -18,7 +18,7 @@ export function PinnedChatList() {
   if (!chats || chats.length === 0) return null;
 
   return (
-    <SidebarGroup>
+    <SidebarGroup className="grid">
       <SidebarGroupLabel>Pinned Chats</SidebarGroupLabel>
       <SidebarMenu>
         {chats?.map((chat) => (
