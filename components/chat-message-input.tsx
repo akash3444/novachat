@@ -57,11 +57,11 @@ export const ChatMessageInput = ({
         <div className="flex items-center justify-between gap-2 px-4">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="outline" size="icon">
+              <Button variant="outline" size="icon" type="button">
                 <Paperclip />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Attach a file</TooltipContent>
+            <TooltipContent>Attach files</TooltipContent>
           </Tooltip>
 
           <Tooltip>

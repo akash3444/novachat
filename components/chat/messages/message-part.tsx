@@ -2,6 +2,11 @@ import { CopyButton } from "@/components/copy-button";
 import { Markdown } from "@/components/markdown";
 import { Button } from "@/components/ui/button";
 import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -14,7 +19,13 @@ import {
 } from "@/components/ui/tooltip";
 import { exportMarkdown, exportNodeAsImage } from "@/utils/export";
 import { UIMessage } from "ai";
-import { FileText, ImageIcon, RefreshCcw, Share } from "lucide-react";
+import {
+  ChevronDown,
+  FileText,
+  ImageIcon,
+  RefreshCcw,
+  Share,
+} from "lucide-react";
 import { useRef } from "react";
 import { ReadAloudButton } from "../actions/read-aloud-button";
 
@@ -32,6 +43,7 @@ export const MessagePart = ({
   switch (part.type) {
     case "text":
       if (role === "user") return part.text;
+
       return (
         <div>
           <div className="-m-4">
@@ -103,9 +115,23 @@ export const MessagePart = ({
     case "step-start":
       return null;
 
+    case "reasoning":
+      return (
+        <Collapsible>
+          <CollapsibleTrigger asChild>
+            <Button variant="ghost" className="-ml-3 group">
+              Reasoning{" "}
+              <ChevronDown className="group-data-[state=open]:rotate-180 transition-transform" />{" "}
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="border-l pl-4">
+            <Markdown>{part.reasoning}</Markdown>
+          </CollapsibleContent>
+        </Collapsible>
+      );
+
     // TODO: handle these cases
     case "file":
-    case "reasoning":
     case "source":
     case "tool-invocation":
       return null;
