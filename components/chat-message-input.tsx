@@ -1,7 +1,9 @@
 "use client";
 
+import { useChatContext } from "@/providers/chat";
 import { ArrowUp, Loader2, Paperclip } from "lucide-react";
 import { useState } from "react";
+import { ModelSelector } from "./chat/model-selector";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
@@ -15,6 +17,7 @@ export const ChatMessageInput = ({
   onSubmit: (message: string) => void;
   onStop?: () => void;
 }) => {
+  const { selectedModel, setSelectedModel } = useChatContext();
   const [message, setMessage] = useState("");
 
   const canSendMessage = !!message.trim() && !isLoading;
@@ -54,15 +57,22 @@ export const ChatMessageInput = ({
           className="!bg-background resize-none border-none shadow-none focus-within:!ring-0 p-4 max-h-40 text-base min-h-22"
           onKeyDown={handleKeyDown}
         />
-        <div className="flex items-center justify-between gap-2 px-4">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="outline" size="icon" type="button">
-                <Paperclip />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Attach files</TooltipContent>
-          </Tooltip>
+        <div className="flex items-end justify-between gap-2 px-4">
+          <div className="flex items-end gap-2">
+            <ModelSelector
+              selectedModel={selectedModel}
+              onModelChange={setSelectedModel}
+            />
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" size="icon" type="button">
+                  <Paperclip />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Attach files</TooltipContent>
+            </Tooltip>
+          </div>
 
           <Tooltip>
             <TooltipTrigger asChild>

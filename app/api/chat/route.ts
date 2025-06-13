@@ -1,18 +1,33 @@
+import { serverEnv } from "@/env/server";
 import { updateChatMessages } from "@/utils/db/chat";
+import { DEFAULT_MODEL } from "@/utils/models";
 import { Json } from "@/utils/supabase/database.types";
-import { createMistral } from "@ai-sdk/mistral";
-import { appendResponseMessages, streamText, UIMessage } from "ai";
+import { createOpenRouter } from "@openrouter/ai-sdk-provider";
+import {
+  appendResponseMessages,
+  smoothStream,
+  streamText,
+  UIMessage,
+} from "ai";
 
 export async function POST(req: Request) {
-  // TODO: remove this once we have a proper model
-  const mistral = createMistral({ apiKey: process.env.MISTRAL_API_KEY });
-  const model = mistral("mistral-small-latest");
+  const openrouter = createOpenRouter({
+    apiKey: serverEnv.OPENROUTER_API_KEY,
+  });
 
-  const { messages, id: chatId }: { messages: UIMessage[]; id: string } =
-    await req.json();
+  const {
+    messages,
+    id: chatId,
+    model = DEFAULT_MODEL,
+  }: { messages: UIMessage[]; id: string; model: string } = await req.json();
+
+  const chatModel = openrouter.chat(model, {
+    reasoning: { effort: "low" },
+  });
 
   const result = streamText({
-    model,
+    experimental_transform: smoothStream(),
+    model: chatModel,
     messages,
     onFinish: async ({ response }) => {
       const allMessages = appendResponseMessages({

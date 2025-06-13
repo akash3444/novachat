@@ -13,7 +13,7 @@ import { WavyDotsLoader } from "./ui/wavy-dots-loader";
 
 export const Chat = ({ id }: { id: string }) => {
   const queryClient = useQueryClient();
-  const { chatsToBeProcessed } = useChatContext();
+  const { chatsToBeProcessed, selectedModel } = useChatContext();
   const isChatProcessed = !chatsToBeProcessed[id];
 
   const { data: chat, isLoading: isLoadingChat } = useQuery({
@@ -25,9 +25,11 @@ export const Chat = ({ id }: { id: string }) => {
     experimental_throttle: 50,
     id,
     initialMessages: (chat?.messages as unknown as Message[]) ?? [],
+    sendExtraMessageFields: true,
     onError: (error) => {
       console.log("error :", error.message);
     },
+    body: { model: selectedModel },
   });
 
   useEffect(() => {

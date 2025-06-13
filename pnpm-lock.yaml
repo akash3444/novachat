@@ -8,12 +8,12 @@ importers:
 
   .:
     dependencies:
-      '@ai-sdk/mistral':
-        specifier: ^1.2.8
-        version: 1.2.8(zod@3.25.56)
       '@ai-sdk/react':
         specifier: ^1.2.12
         version: 1.2.12(react@19.1.0)(zod@3.25.56)
+      '@openrouter/ai-sdk-provider':
+        specifier: ^0.7.1
+        version: 0.7.1(ai@4.3.16(react@19.1.0)(zod@3.25.56))(zod@3.25.56)
       '@radix-ui/react-alert-dialog':
         specifier: ^1.1.14
         version: 1.1.14(@types/react-dom@19.1.6(@types/react@19.1.6))(@types/react@19.1.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -143,12 +143,6 @@ importers:
         version: 5.8.3
 
 packages:
-
-  '@ai-sdk/mistral@1.2.8':
-    resolution: {integrity: sha512-lv857D9UJqCVxiq2Fcu7mSPTypEHBUqLl1K+lCaP6X/7QAkcaxI36QDONG+tOhGHJOXTsS114u8lrUTaEiGXbg==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      zod: ^3.0.0
 
   '@ai-sdk/provider-utils@2.2.8':
     resolution: {integrity: sha512-fqhG+4sCVv8x7nFzYnFo19ryhAa3w096Kmc3hWxMQfW/TubPOmt3A6tYZhl4mUfQWWQMsuSkLrtjlWuXBVSGQA==}
@@ -496,6 +490,13 @@ packages:
   '@nolyfill/is-core-module@1.0.39':
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
+
+  '@openrouter/ai-sdk-provider@0.7.1':
+    resolution: {integrity: sha512-jppCJErJ13KKnr0rOJrElmrlGul+0G5OO45Tqn1II2uIVcJLjyuzyS1hkCWD3fmlKVAuwVbyumTh6JQsS4e+4g==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      ai: ^4.3.16
+      zod: ^3.25.34
 
   '@opentelemetry/api@1.9.0':
     resolution: {integrity: sha512-3giAOQvZiH5F9bMlMiv8+GSPMeqg0dbaeo58/0SlA9sxSqZhnUtxzX9/2FzyhS9sWQf5S0GJE0AKBrFqjpeYcg==}
@@ -3055,12 +3056,6 @@ packages:
 
 snapshots:
 
-  '@ai-sdk/mistral@1.2.8(zod@3.25.56)':
-    dependencies:
-      '@ai-sdk/provider': 1.1.3
-      '@ai-sdk/provider-utils': 2.2.8(zod@3.25.56)
-      zod: 3.25.56
-
   '@ai-sdk/provider-utils@2.2.8(zod@3.25.56)':
     dependencies:
       '@ai-sdk/provider': 1.1.3
@@ -3363,6 +3358,13 @@ snapshots:
       fastq: 1.19.1
 
   '@nolyfill/is-core-module@1.0.39': {}
+
+  '@openrouter/ai-sdk-provider@0.7.1(ai@4.3.16(react@19.1.0)(zod@3.25.56))(zod@3.25.56)':
+    dependencies:
+      '@ai-sdk/provider': 1.1.3
+      '@ai-sdk/provider-utils': 2.2.8(zod@3.25.56)
+      ai: 4.3.16(react@19.1.0)(zod@3.25.56)
+      zod: 3.25.56
 
   '@opentelemetry/api@1.9.0': {}
 
