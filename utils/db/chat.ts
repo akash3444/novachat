@@ -41,7 +41,7 @@ export const getChatById = async (id: string) => {
   return data;
 };
 
-export const getUserChats = async () => {
+export const getUserChats = async (page: number = 0, pageSize: number = 20) => {
   const supabase = await createClient();
   const user = await supabase.auth.getUser();
 
@@ -49,32 +49,43 @@ export const getUserChats = async () => {
     throw new Error("Unauthorized");
   }
 
-  const { data, error } = await supabase
+  const from = page * pageSize;
+  const to = (page + 1) * pageSize - 1;
+
+  const { data, count, error } = await supabase
     .from("chats")
-    .select("id, title, is_pinned")
+    .select("id, title, is_pinned", { count: "exact" })
     .eq("user_id", user.data.user?.id)
     .eq("is_pinned", false)
+    .range(from, to)
     .order("created_at", { ascending: false });
 
   if (error) throw error;
 
-  return data;
+  return { data, count };
 };
 
-export const getPinnedChats = async () => {
+export const getPinnedChats = async (
+  page: number = 0,
+  pageSize: number = 10
+) => {
   const supabase = await createClient();
   const user = await supabase.auth.getUser();
 
   if (!user.data.user?.id) {
     throw new Error("Unauthorized");
   }
+
+  const from = page * pageSize;
+  const to = (page + 1) * pageSize - 1;
 
   const { data, error } = await supabase
     .from("chats")
     .select("id, title, is_pinned")
     .eq("user_id", user.data.user?.id)
     .eq("is_pinned", true)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .range(from, to);
 
   if (error) throw error;
 

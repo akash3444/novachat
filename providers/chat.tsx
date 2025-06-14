@@ -10,6 +10,7 @@ interface ChatContextType {
   chatsToBeProcessed: chatsToBeProcessed;
   selectedModel: string;
   setSelectedModel: (model: string) => void;
+  markChatAsProcessed: (id: string) => void;
 }
 
 const ChatContext = createContext<ChatContextType>({
@@ -17,6 +18,7 @@ const ChatContext = createContext<ChatContextType>({
   chatsToBeProcessed: {},
   selectedModel: DEFAULT_MODEL,
   setSelectedModel: () => {},
+  markChatAsProcessed: () => {},
 });
 
 type chatsToBeProcessed = Record<string, { message: string }>;
@@ -36,6 +38,13 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     router.push(`/chat/${id}`);
   };
 
+  const markChatAsProcessed = (id: string) => {
+    setChatsToBeProcessed((prev) => {
+      delete prev[id];
+      return prev;
+    });
+  };
+
   return (
     <ChatContext.Provider
       value={{
@@ -43,6 +52,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         chatsToBeProcessed,
         selectedModel,
         setSelectedModel,
+        markChatAsProcessed,
       }}
     >
       {children}

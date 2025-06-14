@@ -13,7 +13,8 @@ import { WavyDotsLoader } from "./ui/wavy-dots-loader";
 
 export const Chat = ({ id }: { id: string }) => {
   const queryClient = useQueryClient();
-  const { chatsToBeProcessed, selectedModel } = useChatContext();
+  const { chatsToBeProcessed, markChatAsProcessed, selectedModel } =
+    useChatContext();
   const isChatProcessed = !chatsToBeProcessed[id];
 
   const { data: chat, isLoading: isLoadingChat } = useQuery({
@@ -39,11 +40,34 @@ export const Chat = ({ id }: { id: string }) => {
         role: "user",
         content: chatsToBeProcessed[id].message,
       });
+
       // Optimistically add this chat to the chat list
       queryClient.setQueryData(
         ["chats"],
-        (oldChatList: { id: string; title: string }[]) => {
-          return [{ id, title: "New chat" }, ...oldChatList];
+        (oldChats: {
+          pages: {
+            data: { id: string; title: string; is_pinned: boolean }[];
+            count: number;
+          }[];
+        }) => {
+          const firstPage = oldChats.pages[0];
+          const lastPage = oldChats.pages[oldChats.pages.length - 1];
+          const lastPageCount = lastPage.count;
+
+          return {
+            ...oldChats,
+            pages: [
+              {
+                ...firstPage,
+                data: [
+                  { id, title: "New chat", is_pinned: false },
+                  ...firstPage.data,
+                ],
+                count: lastPageCount + 1,
+              },
+              ...oldChats.pages.slice(1),
+            ],
+          };
         }
       );
 
@@ -51,13 +75,25 @@ export const Chat = ({ id }: { id: string }) => {
         // Optimistically update the chat title
         queryClient.setQueryData(
           ["chats"],
-          (oldChatList: { id: string; title: string }[]) => {
-            return oldChatList.map((chat) =>
-              chat.id === id ? { ...chat, title } : chat
-            );
-          }
+          (oldChats: {
+            pages: {
+              data: { id: string; title: string; is_pinned: boolean }[];
+              count: number;
+            }[];
+          }) => ({
+            ...oldChats,
+            pages: oldChats.pages.map((page) => ({
+              ...page,
+              data: page.data.map((chat) => ({
+                ...chat,
+                title: chat.id === id ? title : chat.title,
+              })),
+            })),
+          })
         );
       });
+
+      markChatAsProcessed(id);
     }
   }, []);
 

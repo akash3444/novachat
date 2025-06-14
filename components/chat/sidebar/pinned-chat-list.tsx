@@ -5,23 +5,28 @@ import {
   SidebarGroupLabel,
   SidebarMenu,
 } from "@/components/ui/sidebar";
+import { getPinnedChats } from "@/utils/db/chat";
 import { useQuery } from "@tanstack/react-query";
 import { ChatItem } from "./chat-item";
-import { getPinnedChats } from "@/utils/db/chat";
 
-export function PinnedChatList() {
-  const { data: chats } = useQuery({
+export function PinnedChatList({
+  chats,
+}: {
+  chats: { id: string; title: string; is_pinned: boolean }[];
+}) {
+  const { data: pinnedChats } = useQuery({
     queryKey: ["pinned-chats"],
     queryFn: () => getPinnedChats(),
+    initialData: chats,
+    enabled: false,
   });
-
   if (!chats || chats.length === 0) return null;
 
   return (
     <SidebarGroup className="grid">
       <SidebarGroupLabel>Pinned Chats</SidebarGroupLabel>
       <SidebarMenu>
-        {chats?.map((chat) => (
+        {pinnedChats?.map((chat) => (
           <ChatItem key={chat.id} chat={chat} />
         ))}
       </SidebarMenu>

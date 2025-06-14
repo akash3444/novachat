@@ -378,7 +378,11 @@ function SidebarSeparator({
 
 function SidebarContent({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <ScrollArea type="auto" className="flex min-h-0 flex-1 flex-col">
+    <ScrollArea
+      type="auto"
+      className="flex min-h-0 flex-1 flex-col"
+      id="sidebar-content"
+    >
       <div
         data-slot="sidebar-content"
         data-sidebar="content"
