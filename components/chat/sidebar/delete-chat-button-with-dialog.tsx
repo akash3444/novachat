@@ -50,7 +50,7 @@ export function DeleteChatButtonWithDialog({
     },
   });
 
-  const handleDeleteChat = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleDeleteChat = async () => {
     await deleteChat();
   };
 
@@ -72,8 +72,8 @@ export function DeleteChatButtonWithDialog({
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
             This action cannot be undone. This will permanently delete the chat{" "}
-            "<span className="font-semibold">{title}</span>" and all its
-            messages.
+            &quot;<span className="font-semibold">{title}</span>&quot; and all
+            its messages.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

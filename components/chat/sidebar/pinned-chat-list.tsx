@@ -20,7 +20,7 @@ export function PinnedChatList({
     initialData: chats,
     enabled: false,
   });
-  if (!chats || chats.length === 0) return null;
+  if (!pinnedChats || pinnedChats.length === 0) return null;
 
   return (
     <SidebarGroup className="grid">

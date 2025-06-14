@@ -48,7 +48,7 @@ export function ChatList({
     ) as HTMLElement;
 
     if (sidebarContent) {
-      sidebarContent.addEventListener("scroll", (e) => {
+      sidebarContent.addEventListener("scroll", () => {
         // 300px from the bottom of the sidebar
         const SCROLL_THRESHOLD_PX = 300;
 

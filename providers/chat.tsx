@@ -31,10 +31,10 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
   const createInitialChat = (message: string) => {
     const id = uuidv4();
-    setChatsToBeProcessed((prev) => {
-      prev[id] = { message };
-      return prev;
-    });
+    setChatsToBeProcessed((prev) => ({
+      ...prev,
+      [id]: { message },
+    }));
     router.push(`/chat/${id}`);
   };
 

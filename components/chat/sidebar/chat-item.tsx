@@ -143,3 +143,4 @@ export const ChatItem = memo(
     );
   }
 );
+ChatItem.displayName = "ChatItem";
