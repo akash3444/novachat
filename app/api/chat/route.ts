@@ -39,6 +39,9 @@ export async function POST(req: Request) {
     },
   });
 
+  // Consume the stream to prevent the client from disconnecting, e.g. by closing the browser tab or because of a network issue
+  result.consumeStream();
+
   return result.toDataStreamResponse({
     sendReasoning: true,
     sendSources: true,
