@@ -35,14 +35,22 @@ export function DeleteChatButtonWithDialog({
     mutationFn: async () => await deleteChatById(id),
     onSuccess: () => {
       // Optimistically update the chat list
-      queryClient.setQueryData(["chats"], (oldChats: { id: string }[]) => {
-        if (!oldChats) {
-          queryClient.invalidateQueries({ queryKey: ["chats"] });
-          return [];
-        }
-
-        return oldChats.filter((chat) => chat.id !== id);
-      });
+      queryClient.setQueryData(
+        ["chats"],
+        (oldChats: {
+          pages: {
+            data: { id: string; title: string; is_pinned: boolean }[];
+            count: number;
+          }[];
+        }) => ({
+          ...oldChats,
+          pages: oldChats.pages.map((page) => ({
+            ...page,
+            data: page.data.filter((chat) => chat.id !== id),
+            count: page.count - 1,
+          })),
+        })
+      );
 
       toast.success("Chat deleted successfully!");
 
