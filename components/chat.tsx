@@ -118,7 +118,11 @@ export const Chat = ({
   return (
     <div className="flex flex-col gap-4 max-w-[var(--breakpoint-md)] w-full mx-auto h-screen">
       <div className="grow flex flex-col gap-10 py-6">
-        <ChatMessages messages={messages} onRegenerate={reload} />
+        <ChatMessages
+          status={status}
+          messages={messages}
+          onRegenerate={reload}
+        />
         {error && (
           <div className="w-fit bg-destructive/15 text-destructive py-2 px-3 rounded-md">
             Could not process your message. Please try again.

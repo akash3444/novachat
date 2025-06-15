@@ -28,17 +28,23 @@ import {
 } from "lucide-react";
 import { useRef } from "react";
 import { ReadAloudButton } from "../actions/read-aloud-button";
+import { UseChatHelpers } from "@ai-sdk/react";
 
 export const MessagePart = ({
   part,
   role,
   onRegenerate,
+  status,
+  isLastMessage,
 }: {
   part: UIMessage["parts"][number];
   role: UIMessage["role"];
   onRegenerate: () => void;
+  status: UseChatHelpers["status"];
+  isLastMessage: boolean;
 }) => {
   const messageRef = useRef<HTMLDivElement>(null);
+  const isMessageReady = !status || status === "ready";
 
   switch (part.type) {
     case "text":
@@ -51,64 +57,76 @@ export const MessagePart = ({
               <Markdown>{part.text}</Markdown>
             </div>
           </div>
-          <div className="-mt-2 flex items-center -ml-2 gap-0.5">
-            <CopyButton
-              text={part.text}
-              className="size-8 text-muted-foreground"
-            />
-            <ReadAloudButton
-              text={part.text}
-              className="size-8 text-muted-foreground"
-            />
-            <Tooltip>
-              <DropdownMenu>
-                <TooltipTrigger asChild>
-                  <DropdownMenuTrigger asChild>
+
+          {(!isLastMessage || (isLastMessage && isMessageReady)) && (
+            <div className="-mt-2 flex items-center -ml-2 gap-0.5">
+              <CopyButton
+                text={part.text}
+                className="size-8 text-muted-foreground"
+              />
+              <ReadAloudButton
+                text={part.text}
+                className="size-8 text-muted-foreground"
+              />
+              <Tooltip>
+                <DropdownMenu>
+                  <TooltipTrigger asChild>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="size-8 text-muted-foreground"
+                        onClick={onRegenerate}
+                      >
+                        <Share />
+                      </Button>
+                    </DropdownMenuTrigger>
+                  </TooltipTrigger>
+
+                  <DropdownMenuContent>
+                    <DropdownMenuItem
+                      onSelect={() => exportMarkdown(part.text)}
+                    >
+                      <FileText /> Export as Markdown
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onSelect={() =>
+                        messageRef.current &&
+                        exportNodeAsImage(
+                          messageRef.current,
+                          "chat-message.png"
+                        )
+                      }
+                    >
+                      <ImageIcon /> Export as Image
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <TooltipContent>
+                  <p>Export message</p>
+                </TooltipContent>
+              </Tooltip>
+
+              {/* Display the regenerate button only if the message is ready */}
+              {isMessageReady && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
                     <Button
                       variant="ghost"
                       size="icon"
                       className="size-8 text-muted-foreground"
                       onClick={onRegenerate}
                     >
-                      <Share />
+                      <RefreshCcw />
                     </Button>
-                  </DropdownMenuTrigger>
-                </TooltipTrigger>
-
-                <DropdownMenuContent>
-                  <DropdownMenuItem onSelect={() => exportMarkdown(part.text)}>
-                    <FileText /> Export as Markdown
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onSelect={() =>
-                      messageRef.current &&
-                      exportNodeAsImage(messageRef.current, "chat-message.png")
-                    }
-                  >
-                    <ImageIcon /> Export as Image
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <TooltipContent>
-                <p>Export message</p>
-              </TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="size-8 text-muted-foreground"
-                  onClick={onRegenerate}
-                >
-                  <RefreshCcw />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Regenerate message</p>
-              </TooltipContent>
-            </Tooltip>
-          </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Regenerate message</p>
+                  </TooltipContent>
+                </Tooltip>
+              )}
+            </div>
+          )}
         </div>
       );
 
