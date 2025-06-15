@@ -15,10 +15,21 @@ import {
   streamText,
   UIMessage,
 } from "ai";
+import Redis from "ioredis";
 import { after } from "next/server";
 import { createResumableStreamContext } from "resumable-stream";
 
-const streamContext = createResumableStreamContext({ waitUntil: after });
+const publisher = new Redis(serverEnv.REDIS_URL, {
+  tls: { rejectUnauthorized: process.env.NODE_ENV === "production" },
+});
+const subscriber = new Redis(serverEnv.REDIS_URL, {
+  tls: { rejectUnauthorized: process.env.NODE_ENV === "production" },
+});
+const streamContext = createResumableStreamContext({
+  waitUntil: after,
+  publisher,
+  subscriber,
+});
 
 export async function POST(req: Request) {
   const openrouter = createOpenRouter({
