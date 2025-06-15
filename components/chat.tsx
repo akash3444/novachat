@@ -1,14 +1,17 @@
 "use client";
 
 import { useAutoResume } from "@/hooks/use-auto-resume";
+import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
 import { useChatContext } from "@/providers/chat";
 import { generateChatTitle } from "@/utils/chat";
 import { useChat } from "@ai-sdk/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { UIMessage } from "ai";
+import { ArrowDown } from "lucide-react";
 import { useEffect } from "react";
 import { ChatMessageInput } from "./chat-message-input";
 import { ChatMessages } from "./chat/messages/chat-messages";
+import { ScrollToBottomButton } from "./chat/messages/scroll-to-bottom";
 import { WavyDotsLoader } from "./ui/wavy-dots-loader";
 
 export const Chat = ({
@@ -22,6 +25,7 @@ export const Chat = ({
   const { chatsToBeProcessed, markChatAsProcessed, selectedModel } =
     useChatContext();
   const isChatProcessed = !chatsToBeProcessed[id];
+  const { ref, isIntersecting } = useIntersectionObserver();
 
   const {
     append,
@@ -131,18 +135,24 @@ export const Chat = ({
         {status === "submitted" && (
           <WavyDotsLoader className="text-muted-foreground" />
         )}
+        <div ref={ref} />
       </div>
-      <div className="sticky bottom-0 bg-background pt-4">
-        <ChatMessageInput
-          isLoading={status === "submitted" || status === "streaming"}
-          onSubmit={(message) => {
-            append({
-              role: "user",
-              content: message,
-            });
-          }}
-          onStop={stop}
+      <div className="sticky bottom-0 pt-4 flex flex-col gap-4">
+        <ScrollToBottomButton
+          className={isIntersecting ? "opacity-0" : "opacity-100"}
         />
+        <div className="bg-background">
+          <ChatMessageInput
+            isLoading={status === "submitted" || status === "streaming"}
+            onSubmit={(message) => {
+              append({
+                role: "user",
+                content: message,
+              });
+            }}
+            onStop={stop}
+          />
+        </div>
       </div>
     </div>
   );
