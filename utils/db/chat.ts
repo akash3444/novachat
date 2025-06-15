@@ -147,3 +147,30 @@ export const updateChatPinStatus = async (id: string, is_pinned: boolean) => {
 
   return data;
 };
+
+export const updateChatRecentStreamId = async (
+  chatId: string,
+  streamId: string
+) => {
+  const supabaseAdmin = createAdminClient();
+  const supabase = await createClient();
+  const user = await supabase.auth.getUser();
+
+  if (!user.data.user?.id) {
+    throw new Error("Unauthorized");
+  }
+
+  const { error } = await supabaseAdmin.from("chats").upsert(
+    {
+      recent_stream_id: streamId,
+      id: chatId,
+      user_id: user.data.user?.id,
+      messages: [],
+      title: "New chat",
+      is_pinned: false,
+    },
+    { onConflict: "id" }
+  );
+
+  if (error) throw error;
+};

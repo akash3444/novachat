@@ -15,6 +15,7 @@ export type Database = {
           id: string
           is_pinned: boolean
           messages: Json[]
+          recent_stream_id: string | null
           title: string
           user_id: string
         }
@@ -23,6 +24,7 @@ export type Database = {
           id?: string
           is_pinned?: boolean
           messages: Json[]
+          recent_stream_id?: string | null
           title?: string
           user_id: string
         }
@@ -31,6 +33,7 @@ export type Database = {
           id?: string
           is_pinned?: boolean
           messages?: Json[]
+          recent_stream_id?: string | null
           title?: string
           user_id?: string
         }

@@ -1,36 +1,54 @@
 "use client";
 
+import { useAutoResume } from "@/hooks/use-auto-resume";
 import { useChatContext } from "@/providers/chat";
 import { generateChatTitle } from "@/utils/chat";
-import { getChatById } from "@/utils/db/chat";
 import { useChat } from "@ai-sdk/react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Message } from "ai";
+import { useQueryClient } from "@tanstack/react-query";
+import { UIMessage } from "ai";
 import { useEffect } from "react";
 import { ChatMessageInput } from "./chat-message-input";
 import { ChatMessages } from "./chat/messages/chat-messages";
 import { WavyDotsLoader } from "./ui/wavy-dots-loader";
 
-export const Chat = ({ id }: { id: string }) => {
+export const Chat = ({
+  id,
+  initialMessages,
+}: {
+  id: string;
+  initialMessages: UIMessage[];
+}) => {
   const queryClient = useQueryClient();
   const { chatsToBeProcessed, markChatAsProcessed, selectedModel } =
     useChatContext();
   const isChatProcessed = !chatsToBeProcessed[id];
 
-  const { data: chat, isLoading: isLoadingChat } = useQuery({
-    queryKey: ["chat", id],
-    queryFn: () => getChatById(id),
-    enabled: isChatProcessed,
-  });
-  const { append, messages, status, reload, stop, error } = useChat({
-    experimental_throttle: 50,
+  const {
+    append,
+    messages,
+    status,
+    reload,
+    stop,
+    error,
+    experimental_resume,
+    setMessages,
+    data,
+  } = useChat({
     id,
-    initialMessages: (chat?.messages as unknown as Message[]) ?? [],
+    initialMessages: initialMessages ?? [],
     sendExtraMessageFields: true,
     onError: (error) => {
       console.log("error :", error.message);
     },
     body: { model: selectedModel },
+  });
+
+  useAutoResume({
+    autoResume: true,
+    initialMessages: initialMessages ?? [],
+    experimental_resume,
+    data,
+    setMessages,
   });
 
   useEffect(() => {
@@ -106,7 +124,7 @@ export const Chat = ({ id }: { id: string }) => {
             Could not process your message. Please try again.
           </div>
         )}
-        {(isLoadingChat || status === "submitted") && (
+        {status === "submitted" && (
           <WavyDotsLoader className="text-muted-foreground" />
         )}
       </div>

@@ -1,5 +1,6 @@
 import { Chat } from "@/components/chat";
 import { getChatById } from "@/utils/db/chat";
+import { UIMessage } from "ai";
 
 export const generateMetadata = async ({
   params,
@@ -16,7 +17,11 @@ export const generateMetadata = async ({
 
 const ChatPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
-  return <Chat id={id} />;
+  const chat = await getChatById(id);
+
+  const initialMessages = chat?.messages as unknown as UIMessage[];
+
+  return <Chat id={id} initialMessages={initialMessages} />;
 };
 
 export default ChatPage;
