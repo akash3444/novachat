@@ -1,58 +1,45 @@
 "use client";
 
 import { useAutoResume } from "@/hooks/use-auto-resume";
-import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
 import { useChatContext } from "@/providers/chat";
 import { generateChatTitle } from "@/utils/chat";
 import { useChat } from "@ai-sdk/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { UIMessage } from "ai";
-import { ArrowDown } from "lucide-react";
 import { useEffect } from "react";
-import { ChatMessageInput } from "./chat-message-input";
 import { ChatMessages } from "./chat/messages/chat-messages";
-import { ScrollToBottomButton } from "./chat/messages/scroll-to-bottom";
 import { WavyDotsLoader } from "./ui/wavy-dots-loader";
 
 export const Chat = ({
   id,
   initialMessages,
+  chat,
 }: {
   id: string;
   initialMessages: UIMessage[];
+  chat: ReturnType<typeof useChat>;
 }) => {
   const queryClient = useQueryClient();
-  const { chatsToBeProcessed, markChatAsProcessed, selectedModel } =
-    useChatContext();
+  const { chatsToBeProcessed, markChatAsProcessed } = useChatContext();
   const isChatProcessed = !chatsToBeProcessed[id];
-  const { ref, isIntersecting } = useIntersectionObserver();
 
   const {
     append,
     messages,
     status,
     reload,
-    stop,
     error,
     experimental_resume,
-    setMessages,
     data,
-  } = useChat({
-    id,
-    initialMessages: initialMessages ?? [],
-    sendExtraMessageFields: true,
-    onError: (error) => {
-      console.log("error :", error.message);
-    },
-    body: { model: selectedModel },
-  });
+    setMessages,
+  } = chat;
 
   useAutoResume({
     autoResume: true,
-    initialMessages: initialMessages ?? [],
-    experimental_resume,
-    data,
-    setMessages,
+    initialMessages: initialMessages,
+    experimental_resume: experimental_resume,
+    data: data,
+    setMessages: setMessages,
   });
 
   useEffect(() => {
@@ -120,40 +107,16 @@ export const Chat = ({
   }, []);
 
   return (
-    <div className="flex flex-col gap-4 max-w-[var(--breakpoint-md)] w-full mx-auto h-screen">
-      <div className="grow flex flex-col gap-10 py-6">
-        <ChatMessages
-          status={status}
-          messages={messages}
-          onRegenerate={reload}
-        />
-        {error && (
-          <div className="w-fit bg-destructive/15 text-destructive py-2 px-3 rounded-md">
-            Could not process your message. Please try again.
-          </div>
-        )}
-        {status === "submitted" && (
-          <WavyDotsLoader className="text-muted-foreground" />
-        )}
-        <div ref={ref} />
-      </div>
-      <div className="sticky bottom-0 pt-4 flex flex-col gap-4">
-        <ScrollToBottomButton
-          className={isIntersecting ? "opacity-0" : "opacity-100"}
-        />
-        <div className="bg-background">
-          <ChatMessageInput
-            isLoading={status === "submitted" || status === "streaming"}
-            onSubmit={(message) => {
-              append({
-                role: "user",
-                content: message,
-              });
-            }}
-            onStop={stop}
-          />
+    <>
+      <ChatMessages status={status} messages={messages} onRegenerate={reload} />
+      {error && (
+        <div className="w-fit bg-destructive/15 text-destructive py-2 px-3 rounded-md">
+          Could not process your message. Please try again.
         </div>
-      </div>
-    </div>
+      )}
+      {status === "submitted" && (
+        <WavyDotsLoader className="text-muted-foreground" />
+      )}
+    </>
   );
 };
