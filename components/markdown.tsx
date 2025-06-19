@@ -62,7 +62,7 @@ const CodeHighlighter = memo(
     theme: string;
   }) => {
     return (
-      <div className="isolate overflow-clip">
+      <div className="isolate overflow-clip rounded-sm">
         {/* Code block header */}
         <div className="z-10 sticky top-0 h-8 border-b flex items-center justify-between pl-6 pr-2 bg-muted">
           <span className="text-xs text-muted-foreground">{language}</span>
