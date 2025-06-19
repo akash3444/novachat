@@ -22,7 +22,7 @@ export const ChatMessages = ({
         key={`${message.id}-${message.role}-${index}`}
         className={cn("w-auto", {
           "bg-muted ml-auto py-2 px-3.5 rounded-lg": message.role === "user",
-          "prose prose-pre:p-0 prose-pre:bg-transparent prose-pre:border max-w-[var(--breakpoint-md)] dark:prose-invert dark:!text-foreground":
+          "prose prose-pre:p-0 prose-pre:bg-transparent prose-pre:border prose-pre:overflow-visible max-w-[var(--breakpoint-md)] dark:prose-invert dark:!text-foreground":
             message.role !== "user",
         })}
       >

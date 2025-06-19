@@ -1,4 +1,3 @@
-import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import { ClassAttributes, ComponentProps, HTMLAttributes, memo } from "react";
 import ReactMarkdown, { ExtraProps } from "react-markdown";
@@ -43,10 +42,6 @@ export const Markdown = memo(
         remarkPlugins={[remarkGfm, ...(remarkPlugins ?? [])]}
         components={{
           code: CodeHighlight,
-          pre: ({ className, ...props }) => (
-            // This is a hack to make the code block header sticky
-            <pre className={cn("overflow-visible", className)} {...props} />
-          ),
           ...components,
         }}
         {...props}
@@ -80,6 +75,7 @@ const CodeHighlighter = memo(
           theme={theme}
           showLanguage={false}
           className="[&>pre]:!bg-muted/60 [&>pre]:!rounded-none"
+          as="div"
         >
           {code}
         </ShikiHighlighter>
