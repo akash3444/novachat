@@ -20,9 +20,8 @@ export const Chat = ({
   chat: ReturnType<typeof useChat>;
 }) => {
   const queryClient = useQueryClient();
-  const { chatsToBeProcessed, markChatAsProcessed } = useChatContext();
+  const { chatsToBeProcessed } = useChatContext();
   const isChatProcessed = !chatsToBeProcessed[id];
-
   const {
     append,
     messages,
@@ -101,8 +100,6 @@ export const Chat = ({
           })
         );
       });
-
-      markChatAsProcessed(id);
     }
   }, []);
 

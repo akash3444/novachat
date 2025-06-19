@@ -37,6 +37,7 @@ export const ChatInputHome = () => {
         <ChatMessages status="submitted" messages={messages} />
         {chatMessage && <WavyDotsLoader className="text-muted-foreground" />}
       </div>
+      <div />
       <div className="sticky bottom-0 bg-background pt-4">
         <ChatMessageInput
           onSubmit={(message) => {

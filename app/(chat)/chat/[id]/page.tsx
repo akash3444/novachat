@@ -18,15 +18,17 @@ const ChatPage = ({ params }: { params: Promise<{ id: string }> }) => {
 
   const { id } = use(params);
   const { ref, isIntersecting } = useIntersectionObserver();
-  const { selectedModel } = useChatContext();
-  const { data: chat } = useQuery({
+  const { selectedModel, chatsToBeProcessed, markChatAsProcessed } =
+    useChatContext();
+  const [isNewChat] = useState(!!chatsToBeProcessed[id]);
+  const { data: chat, isLoading } = useQuery({
     queryKey: ["chat", id],
     queryFn: () => getChatById(id),
     staleTime: 1000 * 60 * 5, // 5 minutes,
   });
   useDocumentTitle(chat?.title ?? "NovaChat");
 
-  const initialMessages = chat?.messages as unknown as UIMessage[];
+  const initialMessages = (chat?.messages ?? []) as unknown as UIMessage[];
 
   const aiSdkChat = useChat({
     id,
@@ -36,6 +38,9 @@ const ChatPage = ({ params }: { params: Promise<{ id: string }> }) => {
       console.log("error :", error.message);
     },
     body: { model: selectedModel },
+    onFinish: () => {
+      markChatAsProcessed(id);
+    },
   });
 
   const { append, stop, status } = aiSdkChat;
@@ -53,10 +58,11 @@ const ChatPage = ({ params }: { params: Promise<{ id: string }> }) => {
     <div className="flex flex-col gap-4 max-w-[var(--breakpoint-md)] w-full mx-auto h-screen">
       <div
         className={cn("grow flex flex-col gap-10 py-6", {
-          "opacity-0": !isChatScrolledToBottom,
+          "opacity-0":
+            !isChatScrolledToBottom && !isLoading && !!chat && !isNewChat,
         })}
       >
-        {chat && (
+        {(!isLoading || isNewChat) && (
           <Chat id={id} initialMessages={initialMessages} chat={aiSdkChat} />
         )}
       </div>
@@ -64,7 +70,9 @@ const ChatPage = ({ params }: { params: Promise<{ id: string }> }) => {
       <div className="sticky bottom-0 pt-4 flex flex-col gap-4">
         <ScrollToBottomButton
           className={
-            isIntersecting || !isChatScrolledToBottom
+            isIntersecting ||
+            isLoading ||
+            (!isChatScrolledToBottom && !isLoading)
               ? "opacity-0"
               : "opacity-100"
           }
