@@ -6,6 +6,7 @@ import { useState } from "react";
 import { UIMessage } from "ai";
 import { WavyDotsLoader } from "./ui/wavy-dots-loader";
 import { ChatMessages } from "./chat/messages/chat-messages";
+import { toast } from "sonner";
 
 const getDummyMessages = (chatMessage: string): UIMessage[] => {
   if (!chatMessage) return [];
@@ -31,6 +32,16 @@ export const ChatInputHome = () => {
 
   const messages = getDummyMessages(chatMessage);
 
+  const handleSubmit = async (message: string) => {
+    try {
+      setChatMessage(message);
+      await createInitialChat(message);
+    } catch {
+      toast.error("Failed to create chat. Please try again.");
+      setChatMessage("");
+    }
+  };
+
   return (
     <div className="flex flex-col gap-4 max-w-[var(--breakpoint-md)] w-full mx-auto h-screen">
       <div className="grow flex flex-col gap-10 py-6">
@@ -39,12 +50,7 @@ export const ChatInputHome = () => {
       </div>
       <div />
       <div className="sticky bottom-0 bg-background pt-4">
-        <ChatMessageInput
-          onSubmit={(message) => {
-            setChatMessage(message);
-            createInitialChat(message);
-          }}
-        />
+        <ChatMessageInput onSubmit={handleSubmit} />
       </div>
     </div>
   );

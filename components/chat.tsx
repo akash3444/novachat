@@ -35,10 +35,10 @@ export const Chat = ({
 
   useAutoResume({
     autoResume: true,
-    initialMessages: initialMessages,
-    experimental_resume: experimental_resume,
-    data: data,
-    setMessages: setMessages,
+    initialMessages,
+    experimental_resume,
+    data,
+    setMessages,
   });
 
   useEffect(() => {

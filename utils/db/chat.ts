@@ -16,10 +16,9 @@ export const updateChatMessages = async (id: string, messages: Json[]) => {
 
   const { data, error } = await supabaseAdmin
     .from("chats")
-    .upsert(
-      { messages, id, user_id: user.data.user?.id },
-      { onConflict: "id" }
-    );
+    .update({ messages })
+    .eq("id", id)
+    .eq("user_id", user.data.user?.id);
 
   if (error) throw error;
 
@@ -103,10 +102,9 @@ export const updateChatTitle = async (id: string, title: string) => {
 
   const { data, error } = await supabaseAdmin
     .from("chats")
-    .upsert(
-      { title, id, user_id: user.data.user?.id, messages: [] },
-      { onConflict: "id" }
-    );
+    .update({ title })
+    .eq("id", id)
+    .eq("user_id", user.data.user?.id);
 
   if (error) throw error;
 
@@ -160,17 +158,11 @@ export const updateChatRecentStreamId = async (
     throw new Error("Unauthorized");
   }
 
-  const { error } = await supabaseAdmin.from("chats").upsert(
-    {
-      recent_stream_id: streamId,
-      id: chatId,
-      user_id: user.data.user?.id,
-      messages: [],
-      title: "New chat",
-      is_pinned: false,
-    },
-    { onConflict: "id" }
-  );
+  const { error } = await supabaseAdmin
+    .from("chats")
+    .update({ recent_stream_id: streamId })
+    .eq("id", chatId)
+    .eq("user_id", user.data.user?.id);
 
   if (error) throw error;
 };
